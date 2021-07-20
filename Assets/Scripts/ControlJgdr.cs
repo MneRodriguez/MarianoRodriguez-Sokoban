@@ -29,7 +29,7 @@ public class ControlJgdr : MonoBehaviour
         }
     }
 
-    private IEnumerator Moverse(Vector3 direction)
+    public IEnumerator Moverse(Vector3 direction)
     {
         jgdrEnMovto = true;
 
@@ -49,5 +49,36 @@ public class ControlJgdr : MonoBehaviour
         transform.position = posTarget;
 
         jgdrEnMovto = false;
+    }
+
+    bool PasoBloqueado (Vector3 position, Vector2 direction)
+    {
+        Vector2 newPos = new Vector2(position.x, position.y) + direction;
+        GameObject[] walls = GameObject.FindGameObjectsWithTag("Pared");
+        
+        foreach (var wall in walls)
+        {
+            if (wall.transform.position.x == newPos.x && wall.transform.position.y == newPos.y)
+            {
+                return true;
+            }
+        }
+
+        GameObject[] boxes = GameObject.FindGameObjectsWithTag("Caja");
+
+        foreach (var box in boxes)
+        {
+            if (box.transform.position.x == newPos.x && box.transform.position.y == newPos.y)
+            {
+                ScriptCaja bx = box.GetComponent<ScriptCaja>(); // TENDRE QUE CAMBIARLOS POR "Caja" ACA??? PREGUNTAR A MAURO SOLIS
+                if (bx && bx.Move(direction))
+                {
+                    return false;
+                }
+                else { return true; }
+            }
+        }
+
+        return false;
     }
 }
