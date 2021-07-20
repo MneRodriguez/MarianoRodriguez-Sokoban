@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ScriptCaja : MonoBehaviour
 {
+    public bool m_SobreCruz;
+
     public bool Move(Vector2 direction) // Inhabilita movto en diagonal
     {
         if (BoxBlocked(transform.position, direction))
@@ -13,7 +15,7 @@ public class ScriptCaja : MonoBehaviour
         else
         {
             transform.Translate(direction); // Permite mover caja al no estar bloqueada
-            //PruebaCuandoEstaCruzado();
+            CambioEstadoCaja();
             return true;
         }
     }
@@ -45,4 +47,21 @@ public class ScriptCaja : MonoBehaviour
         return false;
     }
     
+    void CambioEstadoCaja()
+    {
+        GameObject[] cruces = GameObject.FindGameObjectsWithTag("TileConCruz");
+
+        foreach (var cruz in cruces)
+        {
+            if (transform.position.x == cruz.transform.position.x && transform.position.y == cruz.transform.position.y)
+            {
+                GetComponent<SpriteRenderer>().color = Color.black; // SI LA CAJA ESTA SOBRE UNA CRUZ, SE COLOREA DE NEGRO
+                m_SobreCruz = true;
+                return;
+            }
+        }
+        GetComponent<SpriteRenderer>().color = Color.white;
+        m_SobreCruz = false;
+    }
+
 }
