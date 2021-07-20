@@ -9,7 +9,7 @@ public class ControlJgdr : MonoBehaviour
 
     public float velMovto = 0.4f;
 
-    private void Update()
+    /*private void Update()
     {
         if (Input.GetKey(KeyCode.W) && !jgdrEnMovto)
         {
@@ -27,9 +27,32 @@ public class ControlJgdr : MonoBehaviour
         {
             StartCoroutine(Moverse(Vector3.right));
         }
+    }*/
+
+    public bool Move(Vector2 direction)
+    {
+        if (Mathf.Abs(direction.x) < 0.5)
+        {
+            direction.x = 0;
+        }
+        else
+        {
+            direction.y = 0;
+        }
+        direction.Normalize();
+
+        if (PasoBloqueado(transform.position, direction))
+        {
+            return false;
+        }
+        else
+        {
+            transform.Translate(direction);
+            return true;
+        }
     }
 
-    public IEnumerator Moverse(Vector3 direction)
+    /*public IEnumerator Moverse(Vector3 direction)
     {
         jgdrEnMovto = true;
 
@@ -49,7 +72,7 @@ public class ControlJgdr : MonoBehaviour
         transform.position = posTarget;
 
         jgdrEnMovto = false;
-    }
+    }*/
 
     bool PasoBloqueado (Vector3 position, Vector2 direction)
     {
