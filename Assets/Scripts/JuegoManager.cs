@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class JuegoManager : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class JuegoManager : MonoBehaviour
     {
         m_ConstructorNvls.Build();
         m_Player = FindObjectOfType<ControlJgdr>();
+
+        
+        ResetScene();
     }
 
     void Update()
@@ -31,5 +35,57 @@ public class JuegoManager : MonoBehaviour
         }
 
         else { m_ReadyForInput = true; }
+    }
+
+    public void NextLevel()
+    {
+        m_NextButton.SetActive(true);
+        m_ConstructorNvls.SiguienteNivel();
+        m_ConstructorNvls.Build();
+        StartCoroutine(ResetSceneAsync());
+    }
+
+    public void ResetScene()
+    {
+        StartCoroutine(ResetSceneAsync());
+    }
+
+    public bool SiElNivelSeCompleto()
+    {
+        ScriptCaja[] boxes = FindObjectsOfType<ScriptCaja>();
+
+        foreach (var box in boxes)
+        {
+            if (!box.m_SobreCruz) return false;
+        }
+        return true;
+    }
+
+    IEnumerator ResetSceneAsync()
+    {
+        if (SceneManager.sceneCount > 1)
+        {
+            AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync("EscenaDelNivel");
+
+            while (!asyncUnload.isDone)
+            {
+                yield return null;
+                Debug.Log("Cerrando...");
+            }
+            Debug.Log("Hecho");
+            Resources.UnloadUnusedAssets();
+        }
+        
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("EscenaDelNivel", LoadSceneMode.Additive);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+            Debug.Log("Cargando...");
+        }
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("EscenaDelNivel"));
+        m_ConstructorNvls.Build();
+        m_Player = FindObjectOfType<ControlJgdr>();
+        Debug.Log("Nivel cargado");
+
     }
 }
